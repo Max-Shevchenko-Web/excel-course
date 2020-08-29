@@ -1,5 +1,7 @@
 const path = require('path');
-const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+const {
+  CleanWebpackPlugin
+} = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -15,8 +17,9 @@ const jsLoaders = () => {
       loader: 'babel-loader',
       options: {
         presets: ['@babel/preset-env'],
+        plugins: ['@babel/plugin-proposal-class-properties'],
       },
-    },
+    }
   ];
 
   if (isDev) {
@@ -55,38 +58,34 @@ module.exports = {
       },
     }),
     new CopyPlugin({
-      patterns: [
-        {
-          from: path.resolve(__dirname, 'src/favicon.ico'),
-          to: path.resolve(__dirname, 'dist'),
-        },
-      ],
+      patterns: [{
+        from: path.resolve(__dirname, 'src/favicon.ico'),
+        to: path.resolve(__dirname, 'dist'),
+      }, ],
     }),
     new MiniCssExtractPlugin({
       filename: filename('css'),
     }),
   ],
   module: {
-    rules: [
-      {
-        test: /\.s[ac]ss$/i,
-        use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              hmr: isDev,
-              reloadAll: true,
-            },
-          },
-          'css-loader',
-          'sass-loader',
-        ],
+    rules: [{
+      test: /\.s[ac]ss$/i,
+      use: [{
+        loader: MiniCssExtractPlugin.loader,
+        options: {
+          hmr: isDev,
+          reloadAll: true,
+        },
       },
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: jsLoaders(),
-      },
-    ],
-  },
+      'css-loader',
+      'sass-loader',
+      ],
+    },
+    {
+      test: /\.js$/,
+      exclude: /node_modules/,
+      use: jsLoaders()
+    }
+    ]
+  }
 };
