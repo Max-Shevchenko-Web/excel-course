@@ -39,6 +39,34 @@ class Dom {
   off(eventType, callback) {
     this.$el.removeEventListener(eventType, callback);
   }
+
+  closest(selector) {
+    return $(this.$el.closest(selector));
+  }
+
+  findAll(selector) {
+    return this.$el.querySelectorAll(selector);
+  }
+
+  getCoords() {
+    // получаем координаты элемента
+    return this.$el.getBoundingClientRect();
+  }
+
+  get data() {
+    return this.$el.dataset;
+  }
+
+  css(styles = {}) {
+    // for (const key in styles) {
+    //   if (Object.prototype.hasOwnProperty.call(styles, key)) {
+    //     return this.$el.style.key = styles[key];
+    //   }
+    // }
+    Object.keys(styles).forEach(key => {
+      this.$el.style[key] = styles[key];
+    });
+  }
 }
 
 export function $(selector) {
