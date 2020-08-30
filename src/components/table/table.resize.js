@@ -1,7 +1,11 @@
 import {$} from '@core/dom';
 
+function shouldResize(event) {
+  return event.target.dataset.resize;
+}
+
 export function resizeTable(event, $root) {
-  if (event.target.dataset.resize) {
+  if (shouldResize(event)) {
     const $resizer = $(event.target);
     // const $parent = $resizer.$el.parentNode;//bad!
     // const $parent = $resizer.$el.closest('.column');//лучше нo всеравно привязано к верстке
@@ -27,7 +31,6 @@ export function resizeTable(event, $root) {
         $resizer.css({right: -delta - 4 + 'px'});
       } else {
         const delta = e.clientY - coords.bottom;
-        console.log(delta);
         value = coords.height + delta;
         $resizer.css({bottom: -delta - 4 + 'px'});
       }
