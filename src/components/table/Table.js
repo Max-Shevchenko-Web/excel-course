@@ -6,10 +6,11 @@ import { shouldResize, isCell, matrix, nextSelector } from './table.functions';
 import { $ } from '@core/dom';
 
 export class Table extends ExcelComponent {
-  constructor($root) {
+  constructor($root, options) {
     super($root, {
-      // listeners: ['click', 'mousedown', 'mousemove', 'mouseup']
-      listeners: ['mousedown', 'keydown']
+      name: 'Table',
+      listeners: ['mousedown', 'keydown', 'click', 'input'],
+      ...options
     });
   }
 
@@ -25,7 +26,33 @@ export class Table extends ExcelComponent {
     // перезаписываем метод init но не забываем вызвать родительский метод
     super.init();
     const $cell = this.$root.find('[data-id="0:0"]');
+    this.selectCell($cell);
+
+    this.$on('formula:input', text => {
+      this.selection.current.text(text);
+    });
+
+    // Моя реализация
+    // this.$on('formula:keydown', key => {
+    //   if (key === 'Enter') {
+    //     this.selection.current.focus();
+    //   }
+    // });
+
+    this.$on('formula:done', () => {
+      this.selection.current.focus();
+    });
+  }
+
+  selectCell($cell) {
     this.selection.select($cell);
+    this.$emit('table:select', $cell);
+  }
+
+  onClick() {
+    if (!event.shiftKey) {
+      this.selectCell(this.selection.current);
+    }
   }
 
   onMousedown(event) {
@@ -33,7 +60,6 @@ export class Table extends ExcelComponent {
       resizeTable(event, this.$root);
     } else if (isCell) {
       const $target = $(event.target);
-      console.log($target);
       if (event.shiftKey) {
         // this.selection.selectGroup(target);
         const target = $target.id(true);
@@ -64,8 +90,7 @@ export class Table extends ExcelComponent {
       event.preventDefault();
       const id = this.selection.current.id(true);
       const $next = this.$root.find(nextSelector(key, id));
-
-      this.selection.select($next);
+      this.selectCell($next);
     }
   }
 
@@ -102,6 +127,10 @@ export class Table extends ExcelComponent {
   //   const $cell = this.$root.find(`[data-id="${next.row}:${next.col}"]`);
   //   this.selection.select($cell);
   // }
+
+  onInput(event) {
+    this.$emit('table:input', $(event.target));
+  }
 }
 
 Table.className = 'excel__table';
