@@ -1,6 +1,6 @@
 import { ExcelComponent } from './../../core/ExcelComponent';
 import { createTable } from './table.template';
-import { resizeTable } from './table.resize';
+import { resizeTableHandler } from './table.resize';
 import { TableSelection } from './TableSelection';
 import { shouldResize, isCell, matrix, nextSelector } from './table.functions';
 import { $ } from '@core/dom';
@@ -9,7 +9,7 @@ export class Table extends ExcelComponent {
   constructor($root, options) {
     super($root, {
       name: 'Table',
-      listeners: ['mousedown', 'keydown', 'click', 'input'],
+      listeners: ['mousedown', 'keydown', 'input'],
       ...options
     });
   }
@@ -32,15 +32,12 @@ export class Table extends ExcelComponent {
       this.selection.current.text(text);
     });
 
-    // Моя реализация
-    // this.$on('formula:keydown', key => {
-    //   if (key === 'Enter') {
-    //     this.selection.current.focus();
-    //   }
-    // });
-
     this.$on('formula:done', () => {
       this.selection.current.focus();
+    });
+
+    this.$subscribe( state => {
+      console.log('TableState', state);
     });
   }
 
@@ -49,15 +46,11 @@ export class Table extends ExcelComponent {
     this.$emit('table:select', $cell);
   }
 
-  onClick() {
-    if (!event.shiftKey) {
-      this.selectCell(this.selection.current);
-    }
-  }
+  
 
   onMousedown(event) {
     if (shouldResize(event)) {
-      resizeTable(event, this.$root);
+      resizeTableHandler(event, this.$root);
     } else if (isCell) {
       const $target = $(event.target);
       if (event.shiftKey) {
@@ -69,7 +62,7 @@ export class Table extends ExcelComponent {
             .map(id => this.$root.find(`[data-id="${id}"]`));
         this.selection.selectGroup($cells);
       } else {
-        this.selection.select($target);
+        this.selectCell($target);
       }
     }
   }
