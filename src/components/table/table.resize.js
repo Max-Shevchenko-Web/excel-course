@@ -1,7 +1,7 @@
 import {$} from '@core/dom';
 
 export function resizeTableHandler(event, $root) {
-  // return new Promise(resolve => {
+  return new Promise(resolve => {
     const $resizer = $(event.target);
     // const $parent = $resizer.$el.parentNode;//bad!
     // const $parent = $resizer.$el.closest('.column');//лучше нo всеравно привязано к верстке
@@ -45,10 +45,11 @@ export function resizeTableHandler(event, $root) {
         $parent.css({height: value + 'px'});
       }
 
-      // resolve({
-      //   value,
-      //   id: type === 'col' ? $parent.data.col : null
-      // });
+      resolve({
+        value,
+        type,
+        id: type === 'col' ? $parent.data.col : $parent.data.row
+      });
 
       $resizer.css({
         opacity: 0,
@@ -56,5 +57,5 @@ export function resizeTableHandler(event, $root) {
         right: 0
       });
     };
-  // });
+  });
 }

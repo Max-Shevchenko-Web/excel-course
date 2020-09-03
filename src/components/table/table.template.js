@@ -3,14 +3,20 @@ const CODES = {
   Z: 90
 };
 
-// function toCell(_, col) {
-//   return `
-//     <div class="cell" contenteditable data-col="${col}"></div>
-//   `;
-// }
+const DEFAULT_COLUMN_WIDTH = 120;
+const DEFAULT_COLUMN_HEIGHT = 24;
 
-function toCell(row) {
+function getWidth(colState, index) {
+  return colState[index] || DEFAULT_COLUMN_WIDTH;
+}
+
+function getHeight(rowState, index) {
+  return rowState[index] || DEFAULT_COLUMN_HEIGHT;
+}
+
+function toCell(colState, row) {
   return function(_, col) {
+    const width = getWidth(colState, col);
     return `
         <div
           class="cell"
@@ -18,24 +24,32 @@ function toCell(row) {
           data-col="${col}"
           data-type="cell"
           data-id="${row}:${col}"
+          style="width:${width}px"
         ></div>
     `;
   };
 }
 
-function toColumn(col, index) {
-  return `
-    <div class="column" data-type="resizable" data-col="${index}">
+function toColumn(colState) {
+  return function(col, index,) {
+    const width = getWidth(colState, index);
+    return `
+    <div class="column" data-type="resizable" data-col="${index}" style="width:${width}px">
       ${col}
       <div class="col-resize" data-resize="col"></div>
     </div>
   `;
+  };
 }
 
-function createRow(index, content) {
+function createRow(index, content, rowState) {
   const resize = index ?'<div class="row-resize" data-resize="row"></div>' : '';
+  let height;
+  if (index !== null) {
+    height = getHeight(rowState, index - 1);
+  }
   return `
-    <div class="row" data-type="resizable">
+    <div class="row" data-type="resizable" data-row="${index-1}" style="height:${height}px">
       <div class="row-info" >
         ${index ? index : ''}
         ${resize}
@@ -49,24 +63,15 @@ function toChar(_, index) {
   return String.fromCharCode(CODES.A + index);
 }
 
-export function createTable(rowsCount = 15) {
+export function createTable(rowsCount = 15, state = {}) {
   const colsCount = CODES.Z - CODES.A + 1;
   const rows = [];
+  const {colState, rowState} = state;
 
-  // простой но не красивый способ
-  // const cols = new Array(colsCount)
-  //     .fill('')
-  //     .map((el, index) => {
-  //       return String.fromCharCode(CODES.A + index);
-  //     })
-  //     .map((el)=> {
-  //       return createCol(el);
-  //     })
-  //     .join('');
   const cols = new Array(colsCount)
       .fill('')
       .map(toChar)
-      .map(toColumn)
+      .map(toColumn(colState))
       .join('');
 
   rows.push(createRow(null, cols));
@@ -74,10 +79,10 @@ export function createTable(rowsCount = 15) {
   for (let row = 0; row < rowsCount; row++) {
     const cells = new Array(colsCount)
         .fill('')
-        .map(toCell(row))
+        .map(toCell(colState, row))
         .join('');
 
-    rows.push(createRow(row + 1, cells));
+    rows.push(createRow(row + 1, cells, rowState));
   }
 
   return rows.join('');
