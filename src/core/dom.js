@@ -14,7 +14,7 @@ class Dom {
   }
 
   text(text) {
-    if (typeof text === 'string') {
+    if (typeof text !== 'undefined') {
       this.$el.textContent = text;
       return this; // делается чтобы выполнялся чейнинг
     }
@@ -27,6 +27,13 @@ class Dom {
   clear() {
     this.html('');
     return this;
+  }
+
+  attr(name, value) {
+    this.$el.setAttribute(name, value);
+    return this;
+    // }
+    // return this.$el.getAttribute(name);
   }
 
   append(node) {
@@ -92,6 +99,14 @@ class Dom {
     Object.keys(styles).forEach(key => {
       this.$el.style[key] = styles[key];
     });
+  }
+
+  // передаем стили которые хотим найти
+  getStyles(styles = []) {
+    return styles.reduce((res, s) => {
+      res[s] = this.$el.style[s];
+      return res;
+    }, {});
   }
 
   addClass(className) {
