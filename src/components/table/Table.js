@@ -7,7 +7,6 @@ import * as actions from '@/redux/actions';
 import { $ } from '@core/dom';
 import {defaultStyles} from '@/constants';
 import { parse } from '@core/parse';
-import { debounceForParse } from './../../core/utils';
 
 
 export class Table extends ExcelComponent {
@@ -108,40 +107,6 @@ export class Table extends ExcelComponent {
     }
   }
 
-  // Моя реализация
-  // onKeydown(event) {
-  //   if (event.code === 'Enter') {
-  //     event.preventDefault();
-  //   }
-  //   const keyCode = event.code;
-  //   const current = this.selection.current.id(true);
-  //   console.log(current);
-  //   const next = current;
-  //   switch (keyCode) {
-  //     case 'ArrowDown':
-  //       next.row += 1;
-  //       break;
-  //     case 'ArrowUp':
-  //       next.row -= 1;
-  //       break;
-  //     case 'ArrowRight':
-  //       next.col += 1;
-  //       break;
-  //     case 'ArrowLeft':
-  //       next.col -= 1;
-  //       break;
-  //     case 'Enter':
-  //       next.row += 1;
-  //       break;
-  //     case 'Tab':
-  //       next.col += 1;
-  //       break;
-  //     default:
-  //   }
-  //   const $cell = this.$root.find(`[data-id="${next.row}:${next.col}"]`);
-  //   this.selection.select($cell);
-  // }
-
   updateTextInStore(value) {
     this.$dispatch(actions.changeText({
       id: this.selection.current.id(),
@@ -153,11 +118,6 @@ export class Table extends ExcelComponent {
     const value = $(event.target).text();
     this.selection.current.attr('data-value', value);
     this.updateTextInStore(value);
-    // const b = (val) => {
-    //   return $(event.target).text(parse(val));
-    // };
-    // const debounceConsole = debounceForParse(b, 4000);
-    // debounceConsole(value);
   }
 }
 

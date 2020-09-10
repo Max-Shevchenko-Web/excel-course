@@ -1,10 +1,10 @@
 import {$} from '@core/dom';
 import { Emitter } from '@core/Emitter';
-import { StoreSubscribe } from './../../core/StoreSubscriber';
+import { StoreSubscribe } from '@core/StoreSubscriber';
+import { updateDate } from '@/redux/actions';
 
 export class Excel {
-  constructor(selector, options) {
-    this.$el = $(selector);
+  constructor(options) {
     this.components = options.components || [];
     this.store = options.store;
     this.emitter = new Emitter;
@@ -29,10 +29,8 @@ export class Excel {
     return $root;
   }
 
-  render() {
-    // добавляем компонент родителю
-    this.$el.append(this.getRoot());
-
+  init() {
+    this.store.dispatch(updateDate());
     this.subscriber.subscribeComponents(this.components);
     // eslint-disable-next-line max-len
     // после добавления компонента в DOM инициализируем его, в соответсвии с его подписками и тп
