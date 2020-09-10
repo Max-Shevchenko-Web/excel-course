@@ -2,6 +2,7 @@ import {$} from '@core/dom';
 import { Emitter } from '@core/Emitter';
 import { StoreSubscribe } from '@core/StoreSubscriber';
 import { updateDate } from '@/redux/actions';
+import { preventDefault } from './../../core/utils';
 
 export class Excel {
   constructor(options) {
@@ -30,6 +31,10 @@ export class Excel {
   }
 
   init() {
+    // можем делать проверку на находимся ли в разрабодке или в продакшене и запрещать какието действия в разработке
+    if (process.env.NODE_ENV) {
+      document.addEventListener('contextmenu', preventDefault);
+    }
     this.store.dispatch(updateDate());
     this.subscriber.subscribeComponents(this.components);
     // eslint-disable-next-line max-len
@@ -42,5 +47,6 @@ export class Excel {
     this.components.forEach( component => {
       component.destroy();
     });
+    document.removeEventListener('contextmenu', preventDefault);
   }
 }

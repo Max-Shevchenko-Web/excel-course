@@ -24,6 +24,11 @@ export class StoreSubscribe {
       });
 
       this.prevState = this.store.getState();
+
+      // когда в режиме разработки мы можем смотреть наш store
+      if (process.env.NODE_ENV === 'development') {
+        window['redux'] = this.prevState;
+      }
     });
   }
 
