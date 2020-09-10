@@ -53,16 +53,10 @@ export function debounce(fn, wait) {
   };
 }
 
-export function debounceForParse(fn, t) {
-  let lastCall;
-  let lastCallTimer;
-  const previousCall = lastCall;
-  return function(args) {
-    lastCall = Date.now();
-    if (previousCall && ((lastCall - previousCall) <= t)) {
-      clearTimeout(lastCallTimer);
-    }
-    lastCallTimer = setTimeout(() => fn(args), t);
-  };
+export function clone(obj) {
+  return JSON.parse(JSON.stringify(obj));
 }
 
+export function preventDefault() {
+  event.preventDefault();
+}
